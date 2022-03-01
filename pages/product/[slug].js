@@ -1,16 +1,13 @@
 import NextLink from "next/link";
 import { Button, Card, Grid, Link, List, ListItem, Typography } from "@material-ui/core";
-import { useRouter } from "next/router";
 import Layout from "../../components/Layout";
-import data from "../../utils/data";
 import useStyles from "../../utils/styles";
 import Image from "next/image";
 
-export default function ProductScreen() {
+export default function ProductScreen(props) {
+  const product = props.product[0];
   const classes = useStyles();
-  const router = useRouter();
-  const { slug } = router.query;
-  const product = data.products.find((a) => a.slug === slug);
+
   if (!product) {
     return <dir>Product not found</dir>;
   }
@@ -85,4 +82,17 @@ export default function ProductScreen() {
       </Grid>
     </Layout>
   );
+}
+
+export async function getServerSideProps(context) {
+  const { params } = context;
+  const { slug } = params;
+
+  const resp = await fetch(`http://localhost:3001/products/${slug}`);
+  const data = await resp.json();
+  return {
+    props: {
+      product: data,
+    },
+  };
 }
