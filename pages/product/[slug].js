@@ -3,13 +3,26 @@ import { Button, Card, Grid, Link, List, ListItem, Typography } from "@material-
 import Layout from "../../components/Layout";
 import useStyles from "../../utils/styles";
 import Image from "next/image";
+import { useContext } from "react";
+import { Store } from "../../utils/Store";
+import axios from "axios";
 
 export default function ProductScreen(props) {
+  const { dispatch } = useContext(Store);
   const product = props.product[0];
   const classes = useStyles();
 
   if (!product) {
     return <dir>Product not found</dir>;
+  }
+
+  async function addToCartHandler() {
+    const { data } = await axios.get(`/api/products/${product.id}`);
+    if (data.countInStock <= 0) {
+      window.alert("Sorry. Product is out of stock");
+      return;
+    }
+    dispatch({ type: "CART_ADD_ITEM", payload: { ...product, quantity: 1 } });
   }
 
   return (
@@ -72,7 +85,7 @@ export default function ProductScreen(props) {
                 </Grid>
               </ListItem>
               <ListItem>
-                <Button fullWidth variant="contained" color="primary">
+                <Button fullWidth variant="contained" color="primary" onClick={addToCartHandler}>
                   Add to cart
                 </Button>
               </ListItem>

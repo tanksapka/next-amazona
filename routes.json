@@ -1,4 +1,5 @@
 {
   "/products": "/products",
+  "/productid/:id": "/products?id=:id",
   "/products/:slug": "/products?slug=:slug"
 }
