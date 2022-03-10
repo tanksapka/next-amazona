@@ -1,21 +1,6 @@
 {
   "products": [
     {
-      "name": "Fit Shirt",
-      "slug": "fit-shirt",
-      "category": "Shirts",
-      "image": "/images/shirt2.jpg",
-      "price": 80,
-      "brand": "Adidas",
-      "rating": 4.2,
-      "numReviews": 10,
-      "countInStock": 20,
-      "description": "A popular shirt",
-      "createdAt": "2022-03-01T22:15:27.299Z",
-      "updatedAt": "2022-03-01T22:15:27.299Z",
-      "id": 13
-    },
-    {
       "name": "Free Shirt",
       "slug": "free-shirt",
       "category": "Shirts",
@@ -26,9 +11,24 @@
       "numReviews": 10,
       "countInStock": 20,
       "description": "A popular shirt",
-      "createdAt": "2022-03-01T22:15:27.299Z",
-      "updatedAt": "2022-03-01T22:15:27.299Z",
-      "id": 14
+      "createdAt": "2022-03-10T22:22:00.653Z",
+      "updatedAt": "2022-03-10T22:22:00.653Z",
+      "id": 1
+    },
+    {
+      "name": "Fit Shirt",
+      "slug": "fit-shirt",
+      "category": "Shirts",
+      "image": "/images/shirt2.jpg",
+      "price": 80,
+      "brand": "Adidas",
+      "rating": 4.2,
+      "numReviews": 10,
+      "countInStock": 20,
+      "description": "A popular shirt",
+      "createdAt": "2022-03-10T22:22:00.654Z",
+      "updatedAt": "2022-03-10T22:22:00.654Z",
+      "id": 2
     },
     {
       "name": "Slim Shirt",
@@ -41,9 +41,9 @@
       "numReviews": 10,
       "countInStock": 20,
       "description": "A popular shirt",
-      "createdAt": "2022-03-01T22:15:27.299Z",
-      "updatedAt": "2022-03-01T22:15:27.299Z",
-      "id": 15
+      "createdAt": "2022-03-10T22:22:00.654Z",
+      "updatedAt": "2022-03-10T22:22:00.654Z",
+      "id": 3
     },
     {
       "name": "Golf Pants",
@@ -56,24 +56,9 @@
       "numReviews": 10,
       "countInStock": 20,
       "description": "Smart looking pants",
-      "createdAt": "2022-03-01T22:15:27.299Z",
-      "updatedAt": "2022-03-01T22:15:27.299Z",
-      "id": 16
-    },
-    {
-      "name": "Classic Shirt",
-      "slug": "classic-pants",
-      "category": "Pants",
-      "image": "/images/pants3.jpg",
-      "price": 75,
-      "brand": "Casely",
-      "rating": 4.5,
-      "numReviews": 10,
-      "countInStock": 20,
-      "description": "A popular pants",
-      "createdAt": "2022-03-01T22:15:27.300Z",
-      "updatedAt": "2022-03-01T22:15:27.300Z",
-      "id": 17
+      "createdAt": "2022-03-10T22:22:00.654Z",
+      "updatedAt": "2022-03-10T22:22:00.654Z",
+      "id": 4
     },
     {
       "name": "Fit Pants",
@@ -86,9 +71,44 @@
       "numReviews": 10,
       "countInStock": 20,
       "description": "A popular pants",
-      "createdAt": "2022-03-01T22:15:27.300Z",
-      "updatedAt": "2022-03-01T22:15:27.300Z",
-      "id": 18
+      "createdAt": "2022-03-10T22:22:00.655Z",
+      "updatedAt": "2022-03-10T22:22:00.655Z",
+      "id": 5
+    },
+    {
+      "name": "Classic Shirt",
+      "slug": "classic-pants",
+      "category": "Pants",
+      "image": "/images/pants3.jpg",
+      "price": 75,
+      "brand": "Casely",
+      "rating": 4.5,
+      "numReviews": 10,
+      "countInStock": 20,
+      "description": "A popular pants",
+      "createdAt": "2022-03-10T22:22:00.655Z",
+      "updatedAt": "2022-03-10T22:22:00.655Z",
+      "id": 6
+    }
+  ],
+  "users": [
+    {
+      "name": "John",
+      "email": "admin@example.com",
+      "password": "$2a$10$EzLjhArACk8meFjcrzKVnedeXcezMzbB8yfKhkhx1B4/Kd.f1uoGe",
+      "isAdmin": true,
+      "createdAt": "2022-03-10T22:22:00.663Z",
+      "updatedAt": "2022-03-10T22:22:00.663Z",
+      "id": 1
+    },
+    {
+      "name": "Jane",
+      "email": "user@example.com",
+      "password": "$2a$10$Bzz/kQoRA9pZQmP6JUu8m.BDn77/vddHPXILSFC1AfuNCz7Y7bnPy",
+      "isAdmin": false,
+      "createdAt": "2022-03-10T22:22:00.663Z",
+      "updatedAt": "2022-03-10T22:22:00.663Z",
+      "id": 2
     }
   ]
 }

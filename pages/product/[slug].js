@@ -106,7 +106,7 @@ export async function getServerSideProps(context) {
   const { params } = context;
   const { slug } = params;
 
-  const resp = await fetch(`http://localhost:3001/products/${slug}`);
+  const resp = await fetch(`http://localhost:3001/productslug/${slug}`);
   const data = await resp.json();
   return {
     props: {

@@ -1,5 +1,3 @@
 {
-  "/products": "/products",
-  "/productid/:id": "/products?id=:id",
-  "/products/:slug": "/products?slug=:slug"
+  "/productslug/:slug": "/products?slug=:slug"
 }
