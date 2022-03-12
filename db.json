@@ -109,6 +109,13 @@
       "createdAt": "2022-03-10T22:22:00.663Z",
       "updatedAt": "2022-03-10T22:22:00.663Z",
       "id": 2
+    },
+    {
+      "name": "Test User",
+      "email": "testuser@gmail.com",
+      "password": "$2a$10$zLZyAI27BSoEcrJBRUQZrOtc7pp2Jd9WcYBm8BSR78DhrntlZeLG.",
+      "isAdmin": false,
+      "id": 3
     }
   ]
 }
