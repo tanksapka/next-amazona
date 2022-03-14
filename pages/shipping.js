@@ -19,30 +19,30 @@ export default function Shipping() {
   const { state, dispatch } = useContext(Store);
   const {
     userInfo,
-    cart: { shippingAddess },
+    cart: { shippingAddress },
   } = state;
   useEffect(() => {
     if (!userInfo) {
       router.push("/login?redirect=/shipping");
     }
-    setValue("fullName", shippingAddess.fullName);
-    setValue("address", shippingAddess.address);
-    setValue("city", shippingAddess.city);
-    setValue("postalCode", shippingAddess.postalCode);
-    setValue("country", shippingAddess.country);
+    setValue("fullName", shippingAddress.fullName);
+    setValue("address", shippingAddress.address);
+    setValue("city", shippingAddress.city);
+    setValue("postalCode", shippingAddress.postalCode);
+    setValue("country", shippingAddress.country);
   }, []);
 
   const classes = useStyles();
 
   const submitHandler = ({ fullName, address, city, postalCode, country }) => {
     dispatch({ type: "SAVE_SHIPPING_ADDRESS", payload: { fullName, address, city, postalCode, country } });
-    Cookies.set("shippingAddress", { fullName, address, city, postalCode, country });
+    Cookies.set("shippingAddress", JSON.stringify({ fullName, address, city, postalCode, country }));
     router.push("/payment");
   };
 
   return (
     <Layout title="Shipping Address">
-      <CheckoutWizard activeSptep={1}></CheckoutWizard>
+      <CheckoutWizard activeStep={1} />
       <form className={classes.form} onSubmit={handleSubmit(submitHandler)}>
         <Typography component="h1" variant="h1">
           Shipping Address

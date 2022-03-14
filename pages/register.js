@@ -41,7 +41,7 @@ export default function Register() {
       const { data } = await axios.post("/api/users/register", { name, email, password });
 
       dispatch({ type: "USER_LOGIN", payload: data });
-      Cookies.set({ types: "USER_LOGIN", payload: data });
+      Cookies.set("userInfo", JSON.stringify(data));
       router.push(redirect || "/");
     } catch (err) {
       enqueueSnackbar(err.response.data ? err.response.data.message : err.message, {
