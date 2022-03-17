@@ -154,6 +154,42 @@
       "createdAt": "2022-03-15T22:17:30.912Z",
       "updatedAt": "2022-03-15T22:17:30.912Z",
       "id": 1
+    },
+    {
+      "orderItems": [
+        {
+          "name": "Free Shirt",
+          "slug": "free-shirt",
+          "category": "Shirts",
+          "image": "/images/shirt1.jpg",
+          "price": 70,
+          "brand": "Nike",
+          "rating": 4.5,
+          "numReviews": 10,
+          "countInStock": 20,
+          "description": "A popular shirt",
+          "createdAt": "2022-03-10T22:22:00.653Z",
+          "updatedAt": "2022-03-10T22:22:00.653Z",
+          "id": 1,
+          "quantity": 1
+        }
+      ],
+      "shippingAddress": {
+        "fullName": "Test User",
+        "address": "123456",
+        "city": "BUD",
+        "postalCode": "1000",
+        "country": "Hun"
+      },
+      "paymentMethod": "PayPal",
+      "itemsPrice": 70,
+      "shippingPrice": 15,
+      "taxPrice": 10.5,
+      "totalPrice": 95.5,
+      "user_id": 1,
+      "createdAt": "2022-03-16T22:39:01.827Z",
+      "updatedAt": "2022-03-16T22:39:01.827Z",
+      "id": 2
     }
   ]
 }
