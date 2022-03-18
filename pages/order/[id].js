@@ -1,32 +1,31 @@
-import {
-  Button,
-  Card,
-  CircularProgress,
-  Grid,
-  Link,
-  List,
-  ListItem,
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Typography,
-} from "@material-ui/core";
-import React, { useContext, useEffect, useReducer, useState } from "react";
+import React, { useContext, useEffect, useReducer } from "react";
 import dynamic from "next/dynamic";
 import Layout from "../../components/Layout";
+import { Store } from "../../utils/Store";
 import NextLink from "next/link";
 import Image from "next/image";
-import { Store } from "../../utils/Store";
+import {
+  Grid,
+  TableContainer,
+  Table,
+  Typography,
+  TableHead,
+  TableBody,
+  TableRow,
+  TableCell,
+  Link,
+  CircularProgress,
+  Button,
+  Card,
+  List,
+  ListItem,
+} from "@material-ui/core";
+import axios from "axios";
 import { useRouter } from "next/router";
 import useStyles from "../../utils/styles";
-import CheckoutWizard from "../../components/checkoutWizard";
 import { useSnackbar } from "notistack";
 import { getError } from "../../utils/error";
-import axios from "axios";
-import Cookies from "js-cookie";
+import { PayPalButtons, usePayPalScriptReducer } from "@paypal/react-paypal-js";
 
 function reducer(state, action) {
   switch (action.type) {
@@ -36,6 +35,27 @@ function reducer(state, action) {
       return { ...state, loading: false, order: action.payload, error: "" };
     case "FETCH_FAIL":
       return { ...state, loading: false, error: action.payload };
+    case "PAY_REQUEST":
+      return { ...state, loadingPay: true };
+    case "PAY_SUCCESS":
+      return { ...state, loadingPay: false, successPay: true };
+    case "PAY_FAIL":
+      return { ...state, loadingPay: false, errorPay: action.payload };
+    case "PAY_RESET":
+      return { ...state, loadingPay: false, successPay: false, errorPay: "" };
+    case "DELIVER_REQUEST":
+      return { ...state, loadingDeliver: true };
+    case "DELIVER_SUCCESS":
+      return { ...state, loadingDeliver: false, successDeliver: true };
+    case "DELIVER_FAIL":
+      return { ...state, loadingDeliver: false, errorDeliver: action.payload };
+    case "DELIVER_RESET":
+      return {
+        ...state,
+        loadingDeliver: false,
+        successDeliver: false,
+        errorDeliver: "",
+      };
     default:
       state;
   }
@@ -43,13 +63,30 @@ function reducer(state, action) {
 
 function Order({ params }) {
   const orderId = params.id;
+  const [{ isPending }, paypalDispatch] = usePayPalScriptReducer();
   const classes = useStyles();
   const router = useRouter();
   const { state } = useContext(Store);
   const { userInfo } = state;
 
-  const [{ loading, error, order }, dispatch] = useReducer(reducer, { loading: true, order: {}, error: "" });
-  const { shippingAddress, paymentMethod, orderItems, itemsPrice, taxPrice, shippingPrice, totalPrice } = order;
+  const [{ loading, error, order, successPay, loadingDeliver, successDeliver }, dispatch] = useReducer(reducer, {
+    loading: true,
+    order: {},
+    error: "",
+  });
+  const {
+    shippingAddress,
+    paymentMethod,
+    orderItems,
+    itemsPrice,
+    taxPrice,
+    shippingPrice,
+    totalPrice,
+    isPaid,
+    paidAt,
+    isDelivered,
+    deliveredAt,
+  } = order;
 
   useEffect(() => {
     if (!userInfo) {
@@ -68,14 +105,86 @@ function Order({ params }) {
         dispatch({ type: "FETCH_FAIL", payload: getError(err) });
       }
     };
-    if (!order.id || (order.id && order.id !== orderId)) {
+    if (!order.id || successPay || successDeliver || (order.id && order.id !== orderId)) {
       fetchOrder();
+      if (successPay) {
+        dispatch({ type: "PAY_RESET" });
+      }
+      if (successDeliver) {
+        dispatch({ type: "DELIVER_RESET" });
+      }
+    } else {
+      const loadPaypalScript = async () => {
+        const { data: clientId } = await axios.get("/api/keys/paypal", {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        });
+        paypalDispatch({
+          type: "resetOptions",
+          value: {
+            "client-id": clientId,
+            currency: "USD",
+          },
+        });
+        paypalDispatch({ type: "setLoadingStatus", value: "pending" });
+      };
+      loadPaypalScript();
     }
-  }, [order]);
+  }, [order, successPay, successDeliver]);
+  const { enqueueSnackbar } = useSnackbar();
+
+  function createOrder(data, actions) {
+    return actions.order
+      .create({
+        purchase_units: [
+          {
+            amount: { value: totalPrice },
+          },
+        ],
+      })
+      .then((orderID) => {
+        return orderID;
+      });
+  }
+  function onApprove(data, actions) {
+    return actions.order.capture().then(async function (details) {
+      try {
+        dispatch({ type: "PAY_REQUEST" });
+        const { data } = await axios.put(`/api/orders/${order.id}/pay`, details, {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        });
+        dispatch({ type: "PAY_SUCCESS", payload: data });
+        enqueueSnackbar("Order is paid", { variant: "success" });
+      } catch (err) {
+        dispatch({ type: "PAY_FAIL", payload: getError(err) });
+        enqueueSnackbar(getError(err), { variant: "error" });
+      }
+    });
+  }
+
+  function onError(err) {
+    enqueueSnackbar(getError(err), { variant: "error" });
+  }
+
+  async function deliverOrderHandler() {
+    try {
+      dispatch({ type: "DELIVER_REQUEST" });
+      const { data } = await axios.put(
+        `/api/orders/${order.id}/deliver`,
+        {},
+        {
+          headers: { authorization: `Bearer ${userInfo.token}` },
+        }
+      );
+      dispatch({ type: "DELIVER_SUCCESS", payload: data });
+      enqueueSnackbar("Order is delivered", { variant: "success" });
+    } catch (err) {
+      dispatch({ type: "DELIVER_FAIL", payload: getError(err) });
+      enqueueSnackbar(getError(err), { variant: "error" });
+    }
+  }
 
   return (
     <Layout title={`Order ${orderId}`}>
-      <CheckoutWizard activeStep={3}></CheckoutWizard>
       <Typography component="h1" variant="h1">
         Order {orderId}
       </Typography>
@@ -96,7 +205,18 @@ function Order({ params }) {
                 <ListItem>
                   {shippingAddress.fullName}, {shippingAddress.address}, {shippingAddress.city},{" "}
                   {shippingAddress.postalCode}, {shippingAddress.country}
+                  &nbsp;
+                  {shippingAddress.location && (
+                    <Link
+                      variant="button"
+                      target="_new"
+                      href={`https://maps.google.com?q=${shippingAddress.location.lat},${shippingAddress.location.lng}`}
+                    >
+                      Show On Map
+                    </Link>
+                  )}
                 </ListItem>
+                <ListItem>Status: {isDelivered ? `delivered at ${deliveredAt}` : "not delivered"}</ListItem>
               </List>
             </Card>
             <Card className={classes.section}>
@@ -107,6 +227,7 @@ function Order({ params }) {
                   </Typography>
                 </ListItem>
                 <ListItem>{paymentMethod}</ListItem>
+                <ListItem>Status: {isPaid ? `paid at ${paidAt}` : "not paid"}</ListItem>
               </List>
             </Card>
             <Card className={classes.section}>
@@ -131,14 +252,14 @@ function Order({ params }) {
                         {orderItems.map((item) => (
                           <TableRow key={item.id}>
                             <TableCell>
-                              <NextLink href={`product/${item.slug}`} passHref>
+                              <NextLink href={`/product/${item.slug}`} passHref>
                                 <Link>
                                   <Image src={item.image} alt={item.name} width={50} height={50}></Image>
                                 </Link>
                               </NextLink>
                             </TableCell>
                             <TableCell>
-                              <NextLink href={`product/${item.slug}`} passHref>
+                              <NextLink href={`/product/${item.slug}`} passHref>
                                 <Link>
                                   <Typography>{item.name}</Typography>
                                 </Link>
@@ -159,7 +280,7 @@ function Order({ params }) {
               </List>
             </Card>
           </Grid>
-          <Grid md={3} xs={12}>
+          <Grid item md={3} xs={12}>
             <Card className={classes.section}>
               <List>
                 <ListItem>
@@ -209,6 +330,29 @@ function Order({ params }) {
                     </Grid>
                   </Grid>
                 </ListItem>
+                {!isPaid && (
+                  <ListItem>
+                    {isPending ? (
+                      <CircularProgress />
+                    ) : (
+                      <div className={classes.fullWidth}>
+                        <PayPalButtons
+                          createOrder={createOrder}
+                          onApprove={onApprove}
+                          onError={onError}
+                        ></PayPalButtons>
+                      </div>
+                    )}
+                  </ListItem>
+                )}
+                {userInfo.isAdmin && order.isPaid && !order.isDelivered && (
+                  <ListItem>
+                    {loadingDeliver && <CircularProgress />}
+                    <Button fullWidth variant="contained" color="primary" onClick={deliverOrderHandler}>
+                      Deliver Order
+                    </Button>
+                  </ListItem>
+                )}
               </List>
             </Card>
           </Grid>

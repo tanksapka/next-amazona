@@ -5,9 +5,8 @@ const handler = nc();
 handler.use(isAuth);
 
 handler.get(async (req, res) => {
-  console.log(req.query.id);
-  const data = await fetch(`http://localhost:3001/orders/${req.query.id}`);
-  const order = await data.json();
+  const response = await fetch(`http://localhost:3001/orders/${req.query.id}`);
+  const order = await response.json();
 
   res.send(order);
 });

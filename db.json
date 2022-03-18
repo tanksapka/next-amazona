@@ -146,6 +146,11 @@
         "country": "Hun"
       },
       "paymentMethod": "PayPal",
+      "isPaid": false,
+      "paidAt": "",
+      "isDelivered": false,
+      "deliveredAt": "",
+      "isPending": false,
       "itemsPrice": 90,
       "shippingPrice": 15,
       "taxPrice": 13.5,
@@ -182,6 +187,11 @@
         "country": "Hun"
       },
       "paymentMethod": "PayPal",
+      "isPaid": false,
+      "paidAt": "",
+      "isDelivered": false,
+      "deliveredAt": "",
+      "isPending": false,
       "itemsPrice": 70,
       "shippingPrice": 15,
       "taxPrice": 10.5,
